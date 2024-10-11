@@ -1,9 +1,58 @@
 <!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="utf-8">
-		<title></title>
-	</head>
-	<body>
-	</body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloudflare Images</title>
+    <style>
+        .image-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .image-container img {
+            max-width: 200px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Cloudflare Images</h1>
+    <div class="image-container" id="imageContainer"></div>
+
+    <script>
+        // Cloudflare Account ID and API Token
+        const accountId = '145934bf583c3ee6ef1cea1ffe873a73';
+        const apiToken = '3247d709c25e6df00563c40942873fb249e198a1118b6818612e4e6d3caff4f4';
+        async function fetchImages() {
+            const response = await fetch(`https://api.cloudflare.com/client/v4/accounts/${accountId}/images/v1`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${apiToken}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                displayImages(data.result.images);
+            } else {
+                console.error('Failed to fetch images', data);
+            }
+        }
+
+        function displayImages(images) {
+            const container = document.getElementById('imageContainer');
+            images.forEach(image => {
+                const img = document.createElement('img');
+                img.src = image.variants[0]; // You can choose different sizes of images if available
+                container.appendChild(img);
+            });
+        }
+
+        // Fetch and display images on page load
+        fetchImages();
+    </script>
+</body>
 </html>
