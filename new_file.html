@@ -1,91 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fetch Cloudflare R2 Images</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script> <!-- Supabase SDK -->
-    <script src="https://cdn.jsdelivr.net/npm/aws-sdk@2.1287.0/dist/aws-sdk.min.js"></script> <!-- AWS SDK -->
-</head>
-<body>
+  <head>
+    <title>Shutter &mdash; Colorlib Website Template</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-<h1>Cloudflare R2 Images</h1>
-<div id="gallery"></div>
+    <link href="https://fonts.googleapis.com/css?family=Quicksand:300,400,500,700,900" rel="stylesheet">
+    <link rel="stylesheet" href="fonts/icomoon/style.css">
 
-<script>
-    // Supabase 配置
-    const supabaseUrl = 'https://wecrwrpkuukgdbtjzelx.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndlY3J3cnBrdXVrZ2RidGp6ZWx4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjg0NTU4MTUsImV4cCI6MjA0NDAzMTgxNX0.z-j9JJRVCaggrNYaeLJi8s4sQqRfLQARCD8OIPc-gUw';
-    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/magnific-popup.css">
+    <link rel="stylesheet" href="css/jquery-ui.css">
+    <link rel="stylesheet" href="css/owl.carousel.min.css">
+    <link rel="stylesheet" href="css/owl.theme.default.min.css">
 
-    async function getCloudflareConfig() {
-        try {
-            // 获取 Cloudflare R2 配置信息
-            const { data, error } = await supabase
-                .from('cloudflareS3')  // 假设这是你存储配置的表
-                .select('*')
-                .single();  // 获取单条记录
+    <link rel="stylesheet" href="css/bootstrap-datepicker.css">
 
-            if (error) throw error;
+    <link rel="stylesheet" href="fonts/flaticon/font/flaticon.css">
 
-            return data;
-        } catch (err) {
-            console.error("Error fetching R2 config from Supabase:", err.message);
-        }
-    }
+    <link rel="stylesheet" href="css/aos.css">
+    <link rel="stylesheet" href="css/fancybox.min.css">
 
-    async function fetchImagesFromR2() {
-        try {
-            // 获取 R2 配置
-            const config = await getCloudflareConfig();
-            console.log(config)
-            if (!config) {
-                console.error("No Cloudflare R2 config found");
-                return;
-            }
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- 引入 Vue.js -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    
+  </head>
+  <body>
+  
+  <div class="site-wrap" id="app">
+    <header class="header-bar d-flex d-lg-block align-items-center" data-aos="fade-left">
+      <div class="site-logo">
+        <a href="index.html">Shutter</a>
+      </div>
+    
+      <div class="d-inline-block d-xl-none ml-md-0 ml-auto py-3" style="position: relative; top: 3px;">
+        <a href="#" class="site-menu-toggle js-menu-toggle text-white"><span class="icon-menu h3"></span></a>
+      </div>
 
-            // 初始化 AWS S3 客户端
-            const s3 = new AWS.S3({
-                accessKeyId: config.accessKeyId,
-                secretAccessKey: config.secretAccessKey,
-                endpoint: config.endpoint,
-                s3ForcePathStyle: true,
-                signatureVersion: 'v4',
-                region: 'auto'
-            });
+      <div class="main-menu">
+        <ul class="js-clone-nav">
+          <li class="active"><a href="index.html">Home</a></li>
+          <li><a href="photos.html">Photos</a></li>
+          <li><a href="bio.html">Bio</a></li>
+          <li><a href="blog.html">Blog</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+        <ul class="social js-clone-nav">
+          <li><a href="#"><span class="icon-facebook"></span></a></li>
+          <li><a href="#"><span class="icon-twitter"></span></a></li>
+          <li><a href="#"><span class="icon-instagram"></span></a></li>
+        </ul>
+      </div>
+    </header> 
 
-            // 获取 Cloudflare R2 bucket 中的图片
-            const params = { Bucket: config.bucketName };
-            s3.listObjectsV2(params, function (err, data) {
-                if (err) {
-                    console.error("Error listing objects from R2:", err);
-                    return;
-                }
+    <main class="main-content">
+      <div class="container-fluid photos">
+        <div class="row align-items-stretch">
+          <!-- 使用 Vue 的 v-for 指令动态生成图片 -->
+          <div class="col-6 col-md-6 col-lg-3" v-for="(imageUrl, index) in imageUrls" :key="index" data-aos="fade-up" :data-aos-delay="index * 100">
+            <a :href="imageUrl" class="d-block photo-item" data-fancybox="gallery">
+              <img :src="imageUrl" alt="Image" class="img-fluid">
+              <div class="photo-text-more">
+                <h3 class="heading">Photos Title {{ index + 1 }}</h3>
+                <span class="meta">{{ Math.floor(Math.random() * 50 + 1) }} Photos</span>
+              </div>
+            </a>
+          </div>
+        </div>
 
-                const gallery = document.getElementById('gallery');
-                gallery.innerHTML = ''; // 清空当前的图片
+        <div class="row justify-content-center">
+          <div class="col-md-12 text-center py-5">
+            <p>
+              <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+              Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="icon-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank" >Colorlib</a>
+              <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+            </p>
+          </div>
+        </div>
+      </div>
+    </main>
 
-                // 过滤图片文件并生成 URL
-                data.Contents.filter(item =>
-                    item.Key.endsWith('.jpg') || item.Key.endsWith('.png') || item.Key.endsWith('.gif')
-                ).forEach(item => {
-                    const imageUrl = `${config.publicURL}/${item.Key}`;
-                    const imgElement = document.createElement('img');
-                    imgElement.src = imageUrl;
-                    imgElement.alt = item.Key;
-                    imgElement.style.width = '200px'; // 可自定义样式
-                    imgElement.style.margin = '10px';
-                    gallery.appendChild(imgElement);
-                });
-            });
-        } catch (error) {
-            console.error("Error fetching images from Cloudflare R2:", error);
-        }
-    }
+  </div> <!-- .site-wrap -->
 
-    // 页面加载时自动获取图片
-    window.onload = fetchImagesFromR2;
-</script>
+  <script>
+    new Vue({
+      el: '#app',
+      data: {
+        // 模拟从 Cloudflare R2 获取的图片链接数组
+        imageUrls: [
+          'https://your-cloudflare-domain.com/bucket-path/image1.jpg',
+          'https://your-cloudflare-domain.com/bucket-path/image2.jpg',
+          'https://your-cloudflare-domain.com/bucket-path/image3.jpg',
+          'https://your-cloudflare-domain.com/bucket-path/image4.jpg'
+        ]
+      }
+    });
+  </script>
 
-</body>
+  <script src="js/jquery-3.3.1.min.js"></script>
+  <script src="js/jquery-migrate-3.0.1.min.js"></script>
+  <script src="js/jquery-ui.js"></script>
+  <script src="js/popper.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/owl.carousel.min.js"></script>
+  <script src="js/jquery.stellar.min.js"></script>
+  <script src="js/jquery.countdown.min.js"></script>
+  <script src="js/jquery.magnific-popup.min.js"></script>
+  <script src="js/bootstrap-datepicker.min.js"></script>
+  <script src="js/aos.js"></script>
+  <script src="js/jquery.fancybox.min.js"></script>
+  <script src="js/main.js"></script>
+    
+  </body>
 </html>
