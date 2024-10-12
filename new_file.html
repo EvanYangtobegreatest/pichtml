@@ -64,7 +64,7 @@
                         // 过滤并显示图片
                         data.Contents.forEach(item => {
                             if (item.Key.endsWith('.jpg') || item.Key.endsWith('.png') || item.Key.endsWith('.gif')) {
-                                const imageUrl = `${publicURL}/${bucketName}/${item.Key}`;
+                                const imageUrl = `${publicURL}/${item.Key}`;
                                 const imgElement = document.createElement('img');
                                 imgElement.src = imageUrl;
                                 imgElement.alt = item.Key;
