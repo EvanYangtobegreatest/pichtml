@@ -1,85 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cloudflare R2 Image Gallery</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-around;
-        }
-        img {
-            width: 200px;
-            height: auto;
-            margin: 10px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s;
-        }
-        img:hover {
-            transform: scale(1.05);
-        }
-    </style>
-</head>
-<body>
-    <h1>Cloudflare R2 Image Gallery</h1>
-    <div id="image-gallery"></div>
+  <head>
+    <title>Cloudflare R2 Gallery</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    <link href="https://fonts.googleapis.com/css?family=Quicksand:300,400,500,700,900" rel="stylesheet">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- 引入 Vue.js -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <!-- 引入 AWS SDK -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aws-sdk/2.814.0/aws-sdk.min.js"></script>
+  </head>
+  <body>
+  
+  <div id="app" class="container-fluid photos">
+    <div class="row align-items-stretch">
+      <!-- 使用 Vue 的 v-for 动态渲染图片 -->
+      <div class="col-6 col-md-6 col-lg-3" v-for="(image, index) in images" :key="index" data-aos="fade-up">
+        <a :href="image.url" class="d-block photo-item" data-fancybox="gallery">
+          <img :src="image.url" :alt="image.key" class="img-fluid">
+          <div class="photo-text-more">
+            <h3 class="heading">{{ image.key }}</h3>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div> <!-- #app -->
 
-    <script src="https://cdn.jsdelivr.net/npm/aws-sdk@2.1048.0/dist/aws-sdk.min.js"></script>
-    <script>
-        // Cloudflare R2 访问配置
-        const accessKeyId = '145934bf583c3ee6ef1cea1ffe873a73';
-        const secretAccessKey = '3247d709c25e6df00563c40942873fb249e198a1118b6818612e4e6d3caff4f4';
-        const bucketName = 'pic-impact';
-        const endpoint = 'https://b1935e359615d1949f67f2b1e8050ec8.r2.cloudflarestorage.com';
-        const publicURL= 'https://pub-c0e7f6c66b954c3a93e96fc7aa5425c6.r2.dev';
-        // 初始化 AWS SDK S3 客户端
-        const s3 = new AWS.S3({
+  <script>
+    new Vue({
+      el: '#app',
+      data: {
+        images: []  // 用于存储从 R2 获取的图片
+      },
+      methods: {
+        // 封装的获取 Cloudflare R2 图片的函数
+        async fetchImagesFromR2() {
+          const accessKeyId = '145934bf583c3ee6ef1cea1ffe873a73';
+          const secretAccessKey = '3247d709c25e6df00563c40942873fb249e198a1118b6818612e4e6d3caff4f4';
+          const bucketName = 'pic-impact';
+          const endpoint = 'https://b1935e359615d1949f67f2b1e8050ec8.r2.cloudflarestorage.com';
+          const publicURL = 'https://pub-c0e7f6c66b954c3a93e96fc7aa5425c6.r2.dev';
+
+          // 初始化 AWS S3 客户端
+          const s3 = new AWS.S3({
             accessKeyId: accessKeyId,
             secretAccessKey: secretAccessKey,
             endpoint: endpoint,
-            s3ForcePathStyle: true, // 强制路径样式以支持 Cloudflare R2
+            s3ForcePathStyle: true,
             signatureVersion: 'v4',
             region: 'auto'
-        });
+          });
 
-        // 获取 Cloudflare R2 bucket 中的所有图片
-        async function fetchImages() {
-            const params = {
-                Bucket: bucketName
-            };
+          const params = { Bucket: bucketName };
 
-            try {
-                // 列出对象
-                s3.listObjectsV2(params, function(err, data) {
-                    if (err) {
-                        console.log("Error", err);
-                    } else {
-                        const gallery = document.getElementById('image-gallery');
-                        gallery.innerHTML = ''; // 清空当前图片
-
-                        // 过滤并显示图片
-                        data.Contents.forEach(item => {
-                            if (item.Key.endsWith('.jpg') || item.Key.endsWith('.png') || item.Key.endsWith('.gif')) {
-                                const imageUrl = `${publicURL}/${item.Key}`;
-                                const imgElement = document.createElement('img');
-                                imgElement.src = imageUrl;
-                                imgElement.alt = item.Key;
-                                gallery.appendChild(imgElement);
-                            }
-                        });
-                    }
-                });
-            } catch (error) {
-                console.error('Error fetching images:', error);
-            }
+          try {
+            // 获取 Bucket 中的所有对象
+            s3.listObjectsV2(params, (err, data) => {
+              if (err) {
+                console.log('Error', err);
+              } else {
+                this.images = data.Contents.filter(item => 
+                  item.Key.endsWith('.jpg') || item.Key.endsWith('.png') || item.Key.endsWith('.gif')
+                ).map(item => ({
+                  key: item.Key,
+                  url: `${publicURL}/${item.Key}`
+                }));
+              }
+            });
+          } catch (error) {
+            console.error('Error fetching images:', error);
+          }
         }
+      },
+      mounted() {
+        // 在组件挂载时调用获取图片的函数
+        this.fetchImagesFromR2();
+      }
+    });
+  </script>
 
-        // 页面加载后自动获取图片
-        window.onload = fetchImages;
-    </script>
-</body>
+  <script src="js/jquery-3.3.1.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/main.js"></script>
+    
+  </body>
 </html>
