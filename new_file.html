@@ -16,7 +16,7 @@
     // Supabase 配置
     const supabaseUrl = 'https://wecrwrpkuukgdbtjzelx.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndlY3J3cnBrdXVrZ2RidGp6ZWx4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjg0NTU4MTUsImV4cCI6MjA0NDAzMTgxNX0.z-j9JJRVCaggrNYaeLJi8s4sQqRfLQARCD8OIPc-gUw';
-    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
     async function getCloudflareConfig() {
         try {
