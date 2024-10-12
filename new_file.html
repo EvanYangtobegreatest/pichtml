@@ -38,6 +38,7 @@
         try {
             // 获取 R2 配置
             const config = await getCloudflareConfig();
+            console.log(config)
             if (!config) {
                 console.error("No Cloudflare R2 config found");
                 return;
