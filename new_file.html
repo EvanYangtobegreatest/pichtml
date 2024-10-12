@@ -34,7 +34,7 @@
         const accessKeyId = '145934bf583c3ee6ef1cea1ffe873a73';
         const secretAccessKey = '3247d709c25e6df00563c40942873fb249e198a1118b6818612e4e6d3caff4f4';
         const bucketName = 'pic-impact';
-        const endpoint = 'https://pub-c0e7f6c66b954c3a93e96fc7aa5425c6.r2.dev';
+        const endpoint = 'https://b1935e359615d1949f67f2b1e8050ec8.r2.cloudflarestorage.com';
 
         // 初始化 AWS SDK S3 客户端
         const s3 = new AWS.S3({
@@ -64,7 +64,7 @@
                         // 过滤并显示图片
                         data.Contents.forEach(item => {
                             if (item.Key.endsWith('.jpg') || item.Key.endsWith('.png') || item.Key.endsWith('.gif')) {
-                                const imageUrl = `${endpoint}/${bucketName}/${item.Key}`;
+                                const imageUrl = `${https://pub-c0e7f6c66b954c3a93e96fc7aa5425c6.r2.dev}/${bucketName}/${item.Key}`;
                                 const imgElement = document.createElement('img');
                                 imgElement.src = imageUrl;
                                 imgElement.alt = item.Key;
