@@ -3,56 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cloudflare Images</title>
+    <title>Cloudflare R2 Image Gallery</title>
     <style>
-        .image-container {
+        body {
+            font-family: Arial, sans-serif;
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            justify-content: space-around;
         }
-        .image-container img {
-            max-width: 200px;
-            border: 2px solid #ddd;
-            border-radius: 4px;
+        img {
+            width: 200px;
+            height: auto;
+            margin: 10px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+        img:hover {
+            transform: scale(1.05);
         }
     </style>
 </head>
 <body>
-    <h1>Cloudflare Images</h1>
-    <div class="image-container" id="imageContainer"></div>
+    <h1>Cloudflare R2 Image Gallery</h1>
+    <div id="image-gallery"></div>
 
+    <script src="https://cdn.jsdelivr.net/npm/aws-sdk@2.1048.0/dist/aws-sdk.min.js"></script>
     <script>
-        // Cloudflare Account ID and API Token
-        const accountId = '145934bf583c3ee6ef1cea1ffe873a73';
-        const apiToken = '3247d709c25e6df00563c40942873fb249e198a1118b6818612e4e6d3caff4f4';
-        async function fetchImages() {
-            const response = await fetch(`https://api.cloudflare.com/client/v4/accounts/${accountId}/images/v1`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${apiToken}`,
-                    'Content-Type': 'application/json'
-                }
-            });
+        // Cloudflare R2 访问配置
+        const accessKeyId = '145934bf583c3ee6ef1cea1ffe873a73';
+        const secretAccessKey = '3247d709c25e6df00563c40942873fb249e198a1118b6818612e4e6d3caff4f4';
+        const bucketName = 'pic-impact';
+        const endpoint = 'https://b1935e359615d1949f67f2b1e8050ec8.r2.cloudflarestorage.com';
 
-            const data = await response.json();
-            if (data.success) {
-                displayImages(data.result.images);
-            } else {
-                console.error('Failed to fetch images', data);
+        // 初始化 AWS SDK S3 客户端
+        const s3 = new AWS.S3({
+            accessKeyId: accessKeyId,
+            secretAccessKey: secretAccessKey,
+            endpoint: endpoint,
+            s3ForcePathStyle: true, // 强制路径样式以支持 Cloudflare R2
+            signatureVersion: 'v4',
+            region: 'auto'
+        });
+
+        // 获取 Cloudflare R2 bucket 中的所有图片
+        async function fetchImages() {
+            const params = {
+                Bucket: bucketName
+            };
+
+            try {
+                // 列出对象
+                s3.listObjectsV2(params, function(err, data) {
+                    if (err) {
+                        console.log("Error", err);
+                    } else {
+                        const gallery = document.getElementById('image-gallery');
+                        gallery.innerHTML = ''; // 清空当前图片
+
+                        // 过滤并显示图片
+                        data.Contents.forEach(item => {
+                            if (item.Key.endsWith('.jpg') || item.Key.endsWith('.png') || item.Key.endsWith('.gif')) {
+                                const imageUrl = `${endpoint}/${bucketName}/${item.Key}`;
+                                const imgElement = document.createElement('img');
+                                imgElement.src = imageUrl;
+                                imgElement.alt = item.Key;
+                                gallery.appendChild(imgElement);
+                            }
+                        });
+                    }
+                });
+            } catch (error) {
+                console.error('Error fetching images:', error);
             }
         }
 
-        function displayImages(images) {
-            const container = document.getElementById('imageContainer');
-            images.forEach(image => {
-                const img = document.createElement('img');
-                img.src = image.variants[0]; // You can choose different sizes of images if available
-                container.appendChild(img);
-            });
-        }
-
-        // Fetch and display images on page load
-        fetchImages();
+        // 页面加载后自动获取图片
+        window.onload = fetchImages;
     </script>
 </body>
 </html>
