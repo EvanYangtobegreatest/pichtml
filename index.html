@@ -75,7 +75,7 @@
             async compressImage(file) {
                 const compress = new Compress();
                 const image = await compress.compress([file], {
-                    size: 4, // 最大尺寸为 4 MB
+                    size: 1, // 最大尺寸为 4 MB
                     quality: 0.75, // 压缩质量
                     maxWidth: 800, // 最大宽度
                     maxHeight: 800, // 最大高度
