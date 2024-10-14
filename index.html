@@ -1,199 +1,179 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <title>Shutter &mdash; Colorlib Website Template</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <link href="https://fonts.googleapis.com/css?family=Quicksand:300,400,500,700,900" rel="stylesheet">
     <link rel="stylesheet" href="fonts/icomoon/style.css">
-
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/magnific-popup.css">
     <link rel="stylesheet" href="css/jquery-ui.css">
     <link rel="stylesheet" href="css/owl.carousel.min.css">
     <link rel="stylesheet" href="css/owl.theme.default.min.css">
-
     <link rel="stylesheet" href="css/bootstrap-datepicker.css">
-
     <link rel="stylesheet" href="fonts/flaticon/font/flaticon.css">
-
     <link rel="stylesheet" href="css/aos.css">
     <link rel="stylesheet" href="css/fancybox.min.css">
-
     <link rel="stylesheet" href="css/style.css">
-     <!-- 引入 Vue.js -->
+
+    <!-- 引入 Vue.js -->
     <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
     <!-- 引入 AWS SDK -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aws-sdk/2.814.0/aws-sdk.min.js"></script>
-  </head>
-  <body>
-  
+    <!-- 引入 Compress.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/compress.js/1.0.7/compress.min.js"></script>
+</head>
+<body>
 
-  <div class="site-wrap">
-
-  <div class="site-mobile-menu">
-    <div class="site-mobile-menu-header">
-      <div class="site-mobile-menu-close mt-3">
-        <span class="icon-close2 js-menu-toggle"></span>
-      </div>
-    </div>
-    <div class="site-mobile-menu-body"></div>
-  </div>
-
-  <header class="header-bar d-flex d-lg-block align-items-center" data-aos="fade-left">
-    <div class="site-logo">
-      <a href="index.html">Shutter</a>
-    </div>
-    
-    <div class="d-inline-block d-xl-none ml-md-0 ml-auto py-3" style="position: relative; top: 3px;"><a href="#" class="site-menu-toggle js-menu-toggle text-white"><span class="icon-menu h3"></span></a></div>
-
-    <div class="main-menu">
-      <ul class="js-clone-nav">
-        <li class="active"><a href="index.html">Home</a></li>
-        <li><a href="photos.html">Photos</a></li>
-        <li><a href="bio.html">Bio</a></li>
-        <li><a href="blog.html">Blog</a></li>
-        <li><a href="contact.html">Contact</a></li>
-      </ul>
-      <ul class="social js-clone-nav">
-        <li><a href="#"><span class="icon-facebook"></span></a></li>
-        <li><a href="#"><span class="icon-twitter"></span></a></li>
-        <li><a href="#"><span class="icon-instagram"></span></a></li>
-      </ul>
-    </div>
-  </header> 
-  <main class="main-content">
-   <div id="app" class="container-fluid photos">
-  <div class="row align-items-stretch">
-    <div 
-      v-for="(image, index) in images" 
-      :key="index"
-      :class="getColumnClass(image.url)" 
-      class="photo-item" 
-      data-aos="fade-up">
-  
-      <a :href="image.url" class="d-block">
-        <img :src="image.url" :alt="image.key" class="img-fluid">
-        <div class="photo-text-more">
-          <h3 class="heading">Photos Title Here</h3>
-          <span class="meta">42 Photos</span>
+<div class="site-wrap">
+    <header class="header-bar d-flex d-lg-block align-items-center" data-aos="fade-left">
+        <div class="site-logo">
+            <a href="index.html">Shutter</a>
         </div>
-      </a>
-  
-    </div>
-  </div>
+        <div class="main-menu">
+            <ul class="js-clone-nav">
+                <li class="active"><a href="index.html">Home</a></li>
+                <li><a href="photos.html">Photos</a></li>
+                <li><a href="bio.html">Bio</a></li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container-fluid photos">
+            <div class="row align-items-stretch">
+                <div 
+                    v-for="(image, index) in images" 
+                    :key="index"
+                    :class="getColumnClass(image.url)" 
+                    class="photo-item" 
+                    data-aos="fade-up">
+                    <a :href="image.url" class="d-block">
+                        <img :src="image.url" :alt="image.key" class="img-fluid" loading="lazy">
+                        <div class="photo-text-more">
+                            <h3 class="heading">Photos Title Here</h3>
+                            <span class="meta">42 Photos</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
 </div>
 
-
-      <div class="row justify-content-center">
-        <div class="col-md-12 text-center py-5">
-          <p>
-        <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-        Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="icon-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank" >Colorlib</a>
-        <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-      </p>
-        </div>
-      </div>
-    </div>
-  </main>
-
-</div> <!-- .site-wrap -->
 <script>
     new Vue({
-  el: '#app',
-  data: {
-    images: []  // 用于存储从 R2 获取的图片
-  },
-  methods: {
-    // 获取不同列布局的CSS类
-    getColumnClass(imageUrl) {
-      const img = new Image();
-      img.src = imageUrl;
-      const aspectRatio = img.width / img.height;
+        el: '.site-wrap',
+        data: {
+            images: []  // 用于存储从 R2 获取的图片
+        },
+        methods: {
+            async compressImage(file) {
+                const compress = new Compress();
+                const image = await compress.compress([file], {
+                    size: 4, // 最大尺寸为 4 MB
+                    quality: 0.75, // 压缩质量
+                    maxWidth: 800, // 最大宽度
+                    maxHeight: 800, // 最大高度
+                    resize: true // 允许缩放
+                });
+                return image[0].base64; // 返回压缩后的 base64 图片
+            },
+            getColumnClass(imageUrl) {
+                const img = new Image();
+                img.src = imageUrl;
 
-      // 根据宽高比调整列布局
-      if (aspectRatio > 1.5) {
-        // 宽屏图片：更大空间
-        return 'col-12 col-md-6 col-lg-6'; 
-      } else if (aspectRatio > 1) {
-        // 正常宽高图片：中等
-        return 'col-6 col-md-6 col-lg-4';
-      } else {
-        // 窄图：较小空间
-        return 'col-6 col-md-6 col-lg-3';
-      }
-    },
+                return new Promise((resolve) => {
+                    img.onload = () => {
+                        const aspectRatio = img.width / img.height;
 
-    // 获取 Cloudflare R2 图片的函数
-    async fetchImagesFromR2() {
-      const accessKeyId = '145934bf583c3ee6ef1cea1ffe873a73';
-      const secretAccessKey = '3247d709c25e6df00563c40942873fb249e198a1118b6818612e4e6d3caff4f4';
-      const bucketName = 'pic-impact';
-      const endpoint = 'https://b1935e359615d1949f67f2b1e8050ec8.r2.cloudflarestorage.com';
-      const publicURL = 'https://pub-c0e7f6c66b954c3a93e96fc7aa5425c6.r2.dev';
+                        // 根据宽高比调整列布局
+                        if (aspectRatio > 1.5) {
+                            // 宽屏图片：更大空间
+                            resolve('col-12 col-md-6 col-lg-6'); 
+                        } else if (aspectRatio > 1) {
+                            // 正常宽高图片：中等
+                            resolve('col-6 col-md-6 col-lg-4');
+                        } else {
+                            // 窄图：较小空间
+                            resolve('col-6 col-md-6 col-lg-3');
+                        }
+                    };
+                });
+            },
+            async fetchImagesFromR2() {
+                const accessKeyId = '145934bf583c3ee6ef1cea1ffe873a73';
+                const secretAccessKey = '3247d709c25e6df00563c40942873fb249e198a1118b6818612e4e6d3caff4f4';
+                const bucketName = 'pic-impact';
+                const endpoint = 'https://b1935e359615d1949f67f2b1e8050ec8.r2.cloudflarestorage.com';
+                const publicURL = 'https://pub-c0e7f6c66b954c3a93e96fc7aa5425c6.r2.dev';
 
-      // 初始化 AWS S3 客户端
-      const s3 = new AWS.S3({
-        accessKeyId: accessKeyId,
-        secretAccessKey: secretAccessKey,
-        endpoint: endpoint,
-        s3ForcePathStyle: true,
-        signatureVersion: 'v4',
-        region: 'auto'
-      });
+                // 初始化 AWS S3 客户端
+                const s3 = new AWS.S3({
+                    accessKeyId: accessKeyId,
+                    secretAccessKey: secretAccessKey,
+                    endpoint: endpoint,
+                    s3ForcePathStyle: true,
+                    signatureVersion: 'v4',
+                    region: 'auto'
+                });
 
-      const params = { Bucket: bucketName };
+                const params = { Bucket: bucketName };
 
-      try {
-        // 获取 Bucket 中的所有对象
-        s3.listObjectsV2(params, (err, data) => {
-          if (err) {
-            console.log('Error', err);
-          } else {
-            // 过滤出图片并生成 URL
-            const images = data.Contents.filter(item => 
-              item.Key.endsWith('.JPG') || 
-              item.Key.endsWith('.png') || 
-              item.Key.endsWith('.gif') || 
-              item.Key.endsWith('.jpeg')
-            ).map(item => ({
-              key: item.Key,
-              url: `${publicURL}/${item.Key}`
-            }));
+                try {
+                    // 获取 Bucket 中的所有对象
+                    s3.listObjectsV2(params, async (err, data) => {
+                        if (err) {
+                            console.log('Error', err);
+                        } else {
+                            // 过滤出图片并生成 URL
+                            const images = await Promise.all(data.Contents.filter(item => 
+                                item.Key.endsWith('.JPG') || 
+                                item.Key.endsWith('.png') || 
+                                item.Key.endsWith('.gif') || 
+                                item.Key.endsWith('.jpeg')
+                            ).map(async item => {
+                                const url = `${publicURL}/${item.Key}`;
+                                return {
+                                    key: item.Key,
+                                    url: await this.compressImage(url) // 压缩图片
+                                };
+                            }));
 
-            // 保留前 20 个图片
-            this.images = images.slice(0, 20);
-          }
-        });
-      } catch (error) {
-        console.error('Error fetching images:', error);
-      }
-    }
-  },
-  mounted() {
-    // 在组件挂载时调用获取图片的函数
-    this.fetchImagesFromR2();
-  }
-});
+                            // 使用 slice 保留前 20 个图片
+                            this.images = images.slice(0, 20); 
 
-  </script>
-  <script src="js/jquery-3.3.1.min.js"></script>
-  <script src="js/jquery-migrate-3.0.1.min.js"></script>
-  <script src="js/jquery-ui.js"></script>
-  <script src="js/popper.min.js"></script>
-  <script src="js/bootstrap.min.js"></script>
-  <script src="js/owl.carousel.min.js"></script>
-  <script src="js/jquery.stellar.min.js"></script>
-  <script src="js/jquery.countdown.min.js"></script>
-  <script src="js/jquery.magnific-popup.min.js"></script>
-  <script src="js/bootstrap-datepicker.min.js"></script>
-  <script src="js/aos.js"></script>
+                            console.log(this.images); // 验证切片后的数组
+                        }
+                    });
+                } catch (error) {
+                    console.error('Error fetching images:', error);
+                }
+            }
+        },
+        mounted() {
+            // 在组件挂载时调用获取图片的函数
+            this.fetchImagesFromR2();
+        }
+    });
+</script>
+<script src="js/jquery-3.3.1.min.js"></script>
+<script src="js/jquery-migrate-3.0.1.min.js"></script>
+<script src="js/jquery-ui.js"></script>
+<script src="js/popper.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/owl.carousel.min.js"></script>
+<script src="js/jquery.stellar.min.js"></script>
+<script src="js/jquery.countdown.min.js"></script>
+<script src="js/jquery.magnific-popup.min.js"></script>
+<script src="js/bootstrap-datepicker.min.js"></script>
+<script src="js/aos.js"></script>
+<script src="js/jquery.fancybox.min.js"></script>
+<script src="js/main.js"></script>
 
-  <script src="js/jquery.fancybox.min.js"></script>
-
-  <script src="js/main.js"></script>
-    
-  </body>
-  
+</body>
 </html>
