@@ -22,7 +22,10 @@
     <link rel="stylesheet" href="css/fancybox.min.css">
 
     <link rel="stylesheet" href="css/style.css">
-    
+     <!-- 引入 Vue.js -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <!-- 引入 AWS SDK -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aws-sdk/2.814.0/aws-sdk.min.js"></script>
   </head>
   <body>
   
@@ -64,226 +67,25 @@
     <div class="container-fluid photos">
       <div class="row align-items-stretch">
         
-        <div class="col-6 col-md-6 col-lg-8" data-aos="fade-up">
-          <a href="single.html" class="d-block photo-item">
-            <img src="images/img_4.jpg" alt="Image" class="img-fluid">
-            <div class="photo-text-more">
-              <div class="photo-text-more">
-              <h3 class="heading">Photos Title Here</h3>
-              <span class="meta">42 Photos</span>
-            </div>
-            </div>
-          </a>
-        </div>
-        <div class="col-6 col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
-          <a href="single.html" class="d-block photo-item">
-            <img src="images/img_5.jpg" alt="Image" class="img-fluid">
-            <div class="photo-text-more">
-              <div class="photo-text-more">
-              <h3 class="heading">Photos Title Here</h3>
-              <span class="meta">42 Photos</span>
-            </div>
-            </div>
-          </a>
-        </div>
+      
+      
 
-        <div class="col-6 col-md-6 col-lg-3" data-aos="fade-up">
-          <a href="single.html" class="d-block photo-item">
-            <img src="https://pub-c0e7f6c66b954c3a93e96fc7aa5425c6.r2.dev/pic-impact/images/12.jpg" alt="Image" class="img-fluid">
-            <div class="photo-text-more">
-              <h3 class="heading">Photos Title Here</h3>
-              <span class="meta">42 Photos</span>
-            </div>
-          </a>
-        </div>
-        <div class="col-6 col-md-6 col-lg-6" data-aos="fade-up" data-aos-delay="200">
-          <a href="single.html" class="d-block photo-item">
-            <img src="images/img_2.jpg" alt="Image" class="img-fluid">
-            <div class="photo-text-more">
-              <div class="photo-text-more">
-              <h3 class="heading">Photos Title Here</h3>
-              <span class="meta">42 Photos</span>
-            </div>
-            </div>
-          </a>
-        </div>
-        <div class="col-6 col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
-          <a href="single.html" class="d-block photo-item">
-            <img src="images/img_3.jpg" alt="Image" class="img-fluid">
-            <div class="photo-text-more">
-              <div class="photo-text-more">
-              <h3 class="heading">Photos Title Here</h3>
-              <span class="meta">42 Photos</span>
-            </div>
-            </div>
-          </a>
-        </div>
+        <div 
+    v-for="(image, index) in images" 
+    :key="index"
+    :class="getColumnClass(image.url)" 
+    class="photo-item" 
+    data-aos="fade-up">
 
-        
+    <a :href="image.url" class="d-block">
+      <img :src="image.url" :alt="image.key" class="img-fluid">
+      <div class="photo-text-more">
+        <h3 class="heading">Photos Title Here</h3>
+        <span class="meta">42 Photos</span>
+      </div>
+    </a>
 
-        <div class="col-6 col-md-6 col-lg-6" data-aos="fade-up" data-aos-delay="">
-          <a href="single.html" class="d-block photo-item">
-            <img src="images/img_6.jpg" alt="Image" class="img-fluid">
-            <div class="photo-text-more">
-              <div class="photo-text-more">
-              <h3 class="heading">Photos Title Here</h3>
-              <span class="meta">42 Photos</span>
-            </div>
-            </div>
-          </a>
-        </div>
-        <div class="col-6 col-md-6 col-lg-6" data-aos="fade-up" data-aos-delay="100">
-          <a href="single.html" class="d-block photo-item">
-            <img src="images/img_7.jpg" alt="Image" class="img-fluid">
-            <div class="photo-text-more">
-              <div class="photo-text-more">
-              <h3 class="heading">Photos Title Here</h3>
-              <span class="meta">42 Photos</span>
-            </div>
-            </div>
-          </a>
-        </div>
-
-
-        <div class="col-6 col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="">
-          <a href="single.html" class="d-block photo-item">
-            <img src="images/img_8.jpg" alt="Image" class="img-fluid">
-            <div class="photo-text-more">
-              <div class="photo-text-more">
-              <h3 class="heading">Photos Title Here</h3>
-              <span class="meta">42 Photos</span>
-            </div>
-            </div>
-          </a>
-        </div>
-        <div class="col-6 col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
-          <a href="single.html" class="d-block photo-item">
-            <img src="images/img_9.jpg" alt="Image" class="img-fluid">
-            <div class="photo-text-more">
-              <div class="photo-text-more">
-              <h3 class="heading">Photos Title Here</h3>
-              <span class="meta">42 Photos</span>
-            </div>
-            </div>
-          </a>
-        </div>
-        <div class="col-6 col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="200">
-          <a href="single.html" class="d-block photo-item">
-            <img src="images/img_10.jpg" alt="Image" class="img-fluid">
-            <div class="photo-text-more">
-              <div class="photo-text-more">
-              <h3 class="heading">Photos Title Here</h3>
-              <span class="meta">42 Photos</span>
-            </div>
-            </div>
-          </a>
-        </div>
-
-
-        <div class="col-6 col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="">
-          <a href="single.html" class="d-block photo-item">
-            <img src="images/img_1.jpg" alt="Image" class="img-fluid">
-            <div class="photo-text-more">
-              <div class="photo-text-more">
-              <h3 class="heading">Photos Title Here</h3>
-              <span class="meta">42 Photos</span>
-            </div>
-            </div>
-          </a>
-        </div>
-        <div class="col-6 col-md-6 col-lg-6" data-aos="fade-up" data-aos-delay="100">
-          <a href="single.html" class="d-block photo-item">
-            <img src="images/img_2.jpg" alt="Image" class="img-fluid">
-            <div class="photo-text-more">
-              <div class="photo-text-more">
-              <h3 class="heading">Photos Title Here</h3>
-              <span class="meta">42 Photos</span>
-            </div>
-            </div>
-          </a>
-        </div>
-        <div class="col-6 col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
-          <a href="single.html" class="d-block photo-item">
-            <img src="images/img_3.jpg" alt="Image" class="img-fluid">
-            <div class="photo-text-more">
-              <div class="photo-text-more">
-              <h3 class="heading">Photos Title Here</h3>
-              <span class="meta">42 Photos</span>
-            </div>
-            </div>
-          </a>
-        </div>
-
-        <div class="col-6 col-md-6 col-lg-8" data-aos="fade-up" data-aos-delay="">
-          <a href="single.html" class="d-block photo-item">
-            <img src="images/img_4.jpg" alt="Image" class="img-fluid">
-            <div class="photo-text-more">
-              <div class="photo-text-more">
-              <h3 class="heading">Photos Title Here</h3>
-              <span class="meta">42 Photos</span>
-            </div>
-            </div>
-          </a>
-        </div>
-        <div class="col-6 col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
-          <a href="single.html" class="d-block photo-item">
-            <img src="images/img_5.jpg" alt="Image" class="img-fluid">
-            <div class="photo-text-more">
-              <div class="photo-text-more">
-              <h3 class="heading">Photos Title Here</h3>
-              <span class="meta">42 Photos</span>
-            </div>
-            </div>
-          </a>
-        </div>
-
-        <div class="col-6 col-md-6 col-lg-6" data-aos="fade-up" data-aos-delay="">
-          <a href="single.html" class="d-block photo-item">
-            <img src="images/img_6.jpg" alt="Image" class="img-fluid">
-            <div class="photo-text-more">
-              <div class="photo-text-more">
-              <h3 class="heading">Photos Title Here</h3>
-              <span class="meta">42 Photos</span>
-            </div>
-            </div>
-          </a>
-        </div>
-        <div class="col-6 col-md-6 col-lg-6" data-aos="fade-up" data-aos-delay="100">
-          <a href="single.html" class="d-block photo-item">
-            <img src="images/img_7.jpg" alt="Image" class="img-fluid">
-            <div class="photo-text-more">
-              <div class="photo-text-more">
-              <h3 class="heading">Photos Title Here</h3>
-              <span class="meta">42 Photos</span>
-            </div>
-            </div>
-          </a>
-        </div>
-
-
-        <div class="col-6 col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="">
-          <a href="single.html" class="d-block photo-item">
-            <img src="images/img_8.jpg" alt="Image" class="img-fluid">
-            <div class="photo-text-more">
-              <div class="photo-text-more">
-              <h3 class="heading">Photos Title Here</h3>
-              <span class="meta">42 Photos</span>
-            </div>
-            </div>
-          </a>
-        </div>
-        <div class="col-6 col-md-6 col-lg-8" data-aos="fade-up" data-aos-delay="100">
-          <a href="single.html" class="d-block photo-item">
-            <img src="images/img_9.jpg" alt="Image" class="img-fluid">
-            <div class="photo-text-more">
-              <div class="photo-text-more">
-              <h3 class="heading">Photos Title Here</h3>
-              <span class="meta">42 Photos</span>
-            </div>
-            </div>
-          </a>
-        </div>
-        
+  </div>
 
       </div>
 
@@ -300,7 +102,91 @@
   </main>
 
 </div> <!-- .site-wrap -->
+<script>
+    new Vue({
+      el: '#app',
+      data: {
+        images: []  // 用于存储从 R2 获取的图片
+      },
+      methods: {
+        // 获取不同列布局的CSS类
+    getColumnClass(imageUrl) {
+      const img = new Image();
+      img.src = imageUrl;
 
+      return new Promise((resolve) => {
+        img.onload = () => {
+          const aspectRatio = img.width / img.height;
+
+          // 根据宽高比调整列布局
+          if (aspectRatio > 1.5) {
+            // 宽屏图片：更大空间
+            resolve('col-12 col-md-6 col-lg-6'); 
+          } else if (aspectRatio > 1) {
+            // 正常宽高图片：中等
+            resolve('col-6 col-md-6 col-lg-4');
+          } else {
+            // 窄图：较小空间
+            resolve('col-6 col-md-6 col-lg-3');
+          }
+        };
+      });
+    }
+  },
+        // 封装的获取 Cloudflare R2 图片的函数
+        async fetchImagesFromR2() {
+          const accessKeyId = '145934bf583c3ee6ef1cea1ffe873a73';
+          const secretAccessKey = '3247d709c25e6df00563c40942873fb249e198a1118b6818612e4e6d3caff4f4';
+          const bucketName = 'pic-impact';
+          const endpoint = 'https://b1935e359615d1949f67f2b1e8050ec8.r2.cloudflarestorage.com';
+          const publicURL = 'https://pub-c0e7f6c66b954c3a93e96fc7aa5425c6.r2.dev';
+
+          // 初始化 AWS S3 客户端
+          const s3 = new AWS.S3({
+            accessKeyId: accessKeyId,
+            secretAccessKey: secretAccessKey,
+            endpoint: endpoint,
+            s3ForcePathStyle: true,
+            signatureVersion: 'v4',
+            region: 'auto'
+          });
+     
+          const params = { Bucket: bucketName };
+
+         try {
+  // 获取 Bucket 中的所有对象
+  s3.listObjectsV2(params, (err, data) => {
+    if (err) {
+      console.log('Error', err);
+    } else {
+      // 过滤出图片并生成 URL
+      const images = data.Contents.filter(item => 
+        item.Key.endsWith('.JPG') || 
+        item.Key.endsWith('.png') || 
+        item.Key.endsWith('.gif') || 
+        item.Key.endsWith('.jpeg')
+      ).map(item => ({
+        key: item.Key,
+        url: `${publicURL}/${item.Key}`
+      }));
+
+      // 使用 slice 保留前 2 个图片
+      this.images = images.slice(0,20); 
+
+      console.log(this.images); // 验证切片后的数组
+    }
+  });
+} catch (error) {
+  console.error('Error fetching images:', error);
+}
+        }
+      },
+      mounted() {
+        // 在组件挂载时调用获取图片的函数
+        this.fetchImagesFromR2();
+      }
+    });
+  </script>
   <script src="js/jquery-3.3.1.min.js"></script>
   <script src="js/jquery-migrate-3.0.1.min.js"></script>
   <script src="js/jquery-ui.js"></script>
@@ -318,4 +204,5 @@
   <script src="js/main.js"></script>
     
   </body>
+  
 </html>
