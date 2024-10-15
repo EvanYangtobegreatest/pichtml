@@ -22,7 +22,7 @@
     <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
     <!-- 引入 AWS SDK -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aws-sdk/2.814.0/aws-sdk.min.js"></script>
-    <!-- 引入 Compress.js -->
+    <!-- 引入 browser-image-compression.js -->
     <script src="https://cdn.bootcdn.net/ajax/libs/browser-image-compression/2.0.2/browser-image-compression.js"></script>
 </head>
 <body>
@@ -49,8 +49,7 @@
                 <div 
                     v-for="(image, index) in images" 
                     :key="index"
-                    :class="getColumnClass(image.url)" 
-                    class="photo-item" 
+                    class="photo-item col-6 col-md-4 col-lg-3" 
                     data-aos="fade-up">
                     <a :href="image.url" class="d-block">
                         <img :src="image.url" :alt="image.key" class="img-fluid" loading="lazy">
@@ -73,36 +72,28 @@
         },
         methods: {
             async compressImage(file) {
-                const compress = new Compress();
-                const image = await compress.compress([file], {
-                    size: 1, // 最大尺寸为 4 MB
-                    quality: 0.75, // 压缩质量
-                    maxWidth: 800, // 最大宽度
-                    maxHeight: 800, // 最大高度
-                    resize: true // 允许缩放
-                });
-                return image[0].base64; // 返回压缩后的 base64 图片
+                const options = {
+                    maxSizeMB: 1,  // 最大 1MB
+                    maxWidthOrHeight: 800,  // 最大宽度或高度 800px
+                    useWebWorker: true,  // 使用 Web Worker 以提高性能
+                    initialQuality: 0.75  // 初始压缩质量
+                };
+
+                try {
+                    const compressedFile = await imageCompression(file, options);
+                    const compressedBase64 = await this.fileToBase64(compressedFile);
+                    return compressedBase64;
+                } catch (error) {
+                    console.error('Compression error:', error);
+                    return null;
+                }
             },
-            getColumnClass(imageUrl) {
-                const img = new Image();
-                img.src = imageUrl;
-
-                return new Promise((resolve) => {
-                    img.onload = () => {
-                        const aspectRatio = img.width / img.height;
-
-                        // 根据宽高比调整列布局
-                        if (aspectRatio > 1.5) {
-                            // 宽屏图片：更大空间
-                            resolve('col-12 col-md-6 col-lg-6'); 
-                        } else if (aspectRatio > 1) {
-                            // 正常宽高图片：中等
-                            resolve('col-6 col-md-6 col-lg-4');
-                        } else {
-                            // 窄图：较小空间
-                            resolve('col-6 col-md-6 col-lg-3');
-                        }
-                    };
+            fileToBase64(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => resolve(reader.result);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
                 });
             },
             async fetchImagesFromR2() {
@@ -112,7 +103,6 @@
                 const endpoint = 'https://b1935e359615d1949f67f2b1e8050ec8.r2.cloudflarestorage.com';
                 const publicURL = 'https://pub-c0e7f6c66b954c3a93e96fc7aa5425c6.r2.dev';
 
-                // 初始化 AWS S3 客户端
                 const s3 = new AWS.S3({
                     accessKeyId: accessKeyId,
                     secretAccessKey: secretAccessKey,
@@ -125,29 +115,35 @@
                 const params = { Bucket: bucketName };
 
                 try {
-                    // 获取 Bucket 中的所有对象
                     s3.listObjectsV2(params, async (err, data) => {
                         if (err) {
                             console.log('Error', err);
                         } else {
-                            // 过滤出图片并生成 URL
-                            const images = await Promise.all(data.Contents.filter(item => 
-                                item.Key.endsWith('.JPG') || 
-                                item.Key.endsWith('.png') || 
-                                item.Key.endsWith('.gif') || 
-                                item.Key.endsWith('.jpeg')
-                            ).map(async item => {
-                                const url = `${publicURL}/${item.Key}`;
-                                return {
-                                    key: item.Key,
-                                    url: await this.compressImage(url) // 压缩图片
-                                };
-                            }));
+                            const images = await Promise.all(
+                                data.Contents.filter(item => 
+                                    item.Key.endsWith('.JPG') || 
+                                    item.Key.endsWith('.png') || 
+                                    item.Key.endsWith('.gif') || 
+                                    item.Key.endsWith('.jpeg')
+                                ).map(async item => {
+                                    const url = `${publicURL}/${item.Key}`;
+                                    
+                                    // Fetch image as blob
+                                    const response = await fetch(url);
+                                    const blob = await response.blob();
+                                    
+                                    // Compress image
+                                    const compressedBase64 = await this.compressImage(blob);
 
-                            // 使用 slice 保留前 20 个图片
-                            this.images = images.slice(0, 20); 
+                                    return {
+                                        key: item.Key,
+                                        url: compressedBase64 || url
+                                    };
+                                })
+                            );
 
-                            console.log(this.images); // 验证切片后的数组
+                            this.images = images.slice(0, 20); // 仅保留前 20 张图片
+                            console.log(this.images);
                         }
                     });
                 } catch (error) {
@@ -156,11 +152,11 @@
             }
         },
         mounted() {
-            // 在组件挂载时调用获取图片的函数
             this.fetchImagesFromR2();
         }
     });
 </script>
+
 <script src="js/jquery-3.3.1.min.js"></script>
 <script src="js/jquery-migrate-3.0.1.min.js"></script>
 <script src="js/jquery-ui.js"></script>
