@@ -72,17 +72,17 @@
             images: []  // 用于存储从 R2 获取的图片
         },
         methods: {
-            async compressImage(file) {
-                const compress = new Compress();
-                const image = await compress.compress([file], {
-                    size: 1, // 最大尺寸为 4 MB
-                    quality: 0.75, // 压缩质量
-                    maxWidth: 800, // 最大宽度
-                    maxHeight: 800, // 最大高度
-                    resize: true // 允许缩放
-                });
-                return image[0].base64; // 返回压缩后的 base64 图片
-            },
+            // async compressImage(file) {
+            //     const compress = new Compress();
+            //     const image = await compress.compress([file], {
+            //         size: 1, // 最大尺寸为 4 MB
+            //         quality: 0.75, // 压缩质量
+            //         maxWidth: 800, // 最大宽度
+            //         maxHeight: 800, // 最大高度
+            //         resize: true // 允许缩放
+            //     });
+            //     return image[0].base64; // 返回压缩后的 base64 图片
+            // },
             getColumnClass(imageUrl) {
                 const img = new Image();
                 img.src = imageUrl;
@@ -140,7 +140,7 @@
                                 const url = ${publicURL}/${item.Key};
                                 return {
                                     key: item.Key,
-                                    url: await this.compressImage(url) // 压缩图片
+                                    url: url // 压缩图片
                                 };
                             }));
 
